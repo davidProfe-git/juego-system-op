@@ -1,0 +1,392 @@
+/* Concepto: la tarjeta es una pieza de ladrillo y acero. El frente es la ficha de datos
+   y el reverso es el campo de batalla, con el marcador al costado como en una consola. */
+:root {
+  --ground: #12100e;
+  --card: #1b1815;
+  --card-2: #25211c;
+  --line: #3a342b;
+  --brick: #c8452c;
+  --brick-deep: #3d120a;
+  --steel: #b3b9bf;
+  --steel-deep: #5f666c;
+  --gold: #e6b43a;
+  --gold-deep: #8c6b17;
+  --green: #43b05f;
+  --ink: #f1eadf;
+  --muted: #a8a092;
+  --grid: rgba(255, 255, 255, 0.035);
+
+  --f-display: 'Press Start 2P', ui-monospace, 'Courier New', monospace;
+  --f-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-label: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+
+  --brick-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%23c8452c'/%3E%3Crect width='16' height='1' fill='%23e8734a'/%3E%3Crect y='8' width='16' height='1' fill='%23e8734a'/%3E%3Crect y='6' width='16' height='2' fill='%233d120a'/%3E%3Crect y='14' width='16' height='2' fill='%233d120a'/%3E%3Crect x='14' width='2' height='6' fill='%233d120a'/%3E%3Crect x='6' y='8' width='2' height='6' fill='%233d120a'/%3E%3C/svg%3E");
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html, body { min-height: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding-block: clamp(20px, 4vw, 48px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background-color: var(--ground);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: var(--ink);
+  font: 16px/1.5 var(--f-body);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.scene { width: min(100%, 920px); min-width: 0; }
+
+/* ---------- Tarjeta 3D ---------- */
+.card { perspective: 2000px; }
+
+.card-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.3, 0.1, 0.2, 1);
+}
+.card.is-flipped .card-inner { transform: rotateY(180deg); }
+
+.face {
+  grid-area: 1 / 1;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 32px 60px -24px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.back { transform: rotateY(180deg); }
+
+/* Franjas de ladrillo: arriba en el reverso, abajo en el frente */
+.front::after,
+.back::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  height: 32px;
+  background: var(--brick-tile) 0 0 / 32px 32px;
+  image-rendering: pixelated;
+}
+.front::after { bottom: 0; }
+.back::before { top: 0; height: 16px; background-size: 24px 24px; }
+
+/* ---------- Frente ---------- */
+.front {
+  --pad: clamp(20px, 4vw, 44px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 44px);
+  padding: var(--pad);
+  padding-bottom: calc(var(--pad) + 32px);
+}
+
+.front-main,
+.front-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo { width: 40px; height: 40px; image-rendering: pixelated; }
+.place {
+  font: 600 0.9rem/1 var(--f-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.name {
+  margin: 4px 0 0;
+  font: clamp(1.1rem, 3.6vw, 2rem) / 1.35 var(--f-display);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+
+.role {
+  margin: 0;
+  font: 600 1.15rem/1.2 var(--f-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.bio { margin: 0; max-width: 38ch; color: var(--muted); }
+
+.skills { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 0; padding: 0; list-style: none; }
+.skills li {
+  padding: 3px 10px;
+  border: 1px solid var(--steel-deep);
+  border-radius: 2px;
+  font: 600 0.85rem/1.4 var(--f-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.contact { display: grid; gap: 12px; margin: 0; }
+.contact > div { min-width: 0; }
+.contact dt {
+  font: 600 0.78rem/1 var(--f-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.contact dd { margin: 4px 0 0; overflow-wrap: anywhere; font-weight: 500; }
+.contact a { color: var(--ink); text-decoration-color: var(--brick); text-underline-offset: 3px; }
+.contact a:hover { color: var(--gold); }
+
+.copy {
+  margin-left: 6px;
+  padding: 2px 8px;
+  font: 600 0.75rem/1.4 var(--f-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--steel);
+  background: transparent;
+  border: 1px solid var(--steel-deep);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.copy:hover { color: var(--ink); border-color: var(--steel); }
+
+/* ---------- Botones ---------- */
+.btn {
+  font: 600 0.95rem/1 var(--f-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--card-2);
+  border: 1px solid var(--steel-deep);
+  border-radius: 3px;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #0b0a09;
+  transition: transform 0.08s, background 0.15s;
+}
+.btn:hover { background: #2f2a24; }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #0b0a09; }
+
+.btn-primary {
+  color: #1d1503;
+  background: var(--gold);
+  border-color: #f3cf6b;
+  box-shadow: 0 4px 0 var(--gold-deep);
+}
+.btn-primary:hover { background: #f0c352; }
+.btn-primary:active { box-shadow: 0 1px 0 var(--gold-deep); }
+
+.btn-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  align-self: flex-start;
+  padding: 16px 22px;
+  font-family: var(--f-display);
+  font-size: 0.72rem;
+  letter-spacing: 0;
+}
+.btn-play::before {
+  content: "";
+  border-style: solid;
+  border-width: 7px 0 7px 11px;
+  border-color: transparent transparent transparent currentColor;
+}
+
+/* ---------- Reverso: juego ---------- */
+.back {
+  --board: min(54vw, 500px, calc(100svh - 150px));
+  display: grid;
+  grid-template-columns: var(--board) minmax(0, 1fr);
+  gap: clamp(16px, 2.6vw, 28px);
+  padding: clamp(16px, 2.4vw, 24px);
+  padding-top: calc(clamp(16px, 2.4vw, 24px) + 16px);
+  align-items: start;
+}
+
+.board {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #000;
+  border: 3px solid var(--steel-deep);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px #000, 0 0 0 1px var(--line);
+}
+.board canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: 16px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.72);
+}
+.screen-title { margin: 0; font: clamp(0.8rem, 2.4vw, 1.05rem) / 1.6 var(--f-display); text-wrap: balance; }
+.screen-sub { margin: 0; color: var(--muted); font-weight: 500; }
+
+/* ---------- Marcador ---------- */
+.hud { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.hud h3 {
+  margin: 0 0 8px;
+  font: 600 0.8rem/1 var(--f-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.enemies { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; }
+.enemies img { display: block; width: 100%; aspect-ratio: 1; image-rendering: pixelated; transition: opacity 0.2s; }
+.enemies img.gone { opacity: 0.12; }
+
+.players { display: grid; gap: 8px; }
+.pl {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  background: var(--ground);
+  border: 1px solid var(--line);
+}
+.pl-tag { font: 0.62rem/1 var(--f-display); }
+.pl1 .pl-tag { color: var(--gold); }
+.pl2 .pl-tag { color: var(--green); }
+.pl-lives { display: inline-flex; align-items: center; gap: 6px; font: 0.7rem/1 var(--f-display); }
+.ico { width: 16px; height: 16px; image-rendering: pixelated; }
+.pl-score { justify-self: end; font: 0.7rem/1 var(--f-display); font-variant-numeric: tabular-nums; }
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: 600 0.95rem/1 var(--f-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.meta b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.keys { margin: 0; font-size: 0.9rem; color: var(--muted); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ---------- Pie y controles táctiles ---------- */
+.hint {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.touch {
+  display: none;
+  width: min(100%, 440px);
+  margin: 20px auto 0;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.dpad { display: grid; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); gap: 4px; }
+.tbtn {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  background: var(--card-2);
+  border: 1px solid var(--steel-deep);
+  border-radius: 4px;
+  color: var(--ink);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.tbtn.is-down { background: #3b362f; }
+.tbtn::before { content: ""; position: absolute; inset: 0; margin: auto; width: 0; height: 0; border-style: solid; }
+.t-up { grid-area: 1 / 2; }
+.t-left { grid-area: 2 / 1; }
+.t-right { grid-area: 2 / 3; }
+.t-down { grid-area: 3 / 2; }
+.t-up::before { border-width: 0 11px 16px 11px; border-color: transparent transparent var(--ink) transparent; }
+.t-down::before { border-width: 16px 11px 0 11px; border-color: var(--ink) transparent transparent transparent; }
+.t-left::before { border-width: 11px 16px 11px 0; border-color: transparent var(--ink) transparent transparent; }
+.t-right::before { border-width: 11px 0 11px 16px; border-color: transparent transparent transparent var(--ink); }
+.t-fire {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: var(--gold);
+  border-color: #f3cf6b;
+  color: #1d1503;
+  font: 0.62rem/1 var(--f-display);
+  text-transform: uppercase;
+}
+.t-fire::before { display: none; }
+.t-fire.is-down { background: #c99a2b; }
+
+@media (pointer: coarse), (max-width: 700px) {
+  body.game-on .touch { display: flex; }
+  body.game-on .hint { display: none; }
+}
+
+/* ---------- Pantallas estrechas ---------- */
+@media (max-width: 700px) {
+  .front { grid-template-columns: minmax(0, 1fr); }
+  .front-main, .front-side { justify-content: flex-start; }
+  .back { grid-template-columns: minmax(0, 1fr); }
+  .btn-play { align-self: stretch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-inner { transition-duration: 0.01s; }
+  .btn { transition: none; }
+}

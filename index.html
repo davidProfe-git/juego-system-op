@@ -1,0 +1,115 @@
+<title>Tarjeta Tanque</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Press+Start+2P&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<main class="scene">
+  <h1 class="sr-only">Tarjeta de presentación de Alex Moreno, con un juego de tanques en el reverso</h1>
+
+  <div class="card" id="card">
+    <div class="card-inner">
+
+      <!-- FRENTE: edita aquí tus datos -->
+      <section class="face front" id="front" aria-label="Frente de la tarjeta">
+        <div class="front-main">
+          <div class="brand">
+            <canvas class="logo" id="logo" width="16" height="16" aria-hidden="true"></canvas>
+            <span class="place">Bogotá, Colombia</span>
+          </div>
+          <h2 class="name">Alex Moreno</h2>
+          <p class="role">Desarrollador web front-end</p>
+          <p class="bio">Construyo sitios rápidos, claros y con un poco de juego. Si llegaste hasta aquí, dale la vuelta a la tarjeta.</p>
+          <ul class="skills" aria-label="Tecnologías">
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>JavaScript</li>
+            <li>Canvas</li>
+          </ul>
+        </div>
+
+        <div class="front-side">
+          <dl class="contact">
+            <div>
+              <dt>Correo</dt>
+              <dd><span id="email">hola@tudominio.com</span><button class="copy" id="copyBtn" type="button">Copiar</button></dd>
+            </div>
+            <div>
+              <dt>Teléfono</dt>
+              <dd>+57 300 000 0000</dd>
+            </div>
+            <div>
+              <dt>Web</dt>
+              <dd><a href="https://tudominio.com" target="_blank" rel="noopener">tudominio.com</a></dd>
+            </div>
+            <div>
+              <dt>GitHub</dt>
+              <dd><a href="https://github.com/tuusuario" target="_blank" rel="noopener">github.com/tuusuario</a></dd>
+            </div>
+          </dl>
+          <button class="btn btn-primary btn-play" id="playBtn" type="button">Jugar</button>
+        </div>
+      </section>
+
+      <!-- REVERSO: el juego -->
+      <section class="face back" id="back" aria-label="Juego de tanques" inert>
+        <div class="board" id="board" tabindex="0">
+          <canvas id="game" width="208" height="208" role="img" aria-label="Campo de batalla del juego de tanques"></canvas>
+          <div class="screen" id="screen" hidden>
+            <p class="screen-title" id="screenTitle"></p>
+            <p class="screen-sub" id="screenSub" hidden></p>
+            <button class="btn btn-primary" id="screenBtn" type="button" hidden>Continuar</button>
+          </div>
+        </div>
+
+        <aside class="hud" aria-label="Marcador">
+          <div>
+            <h3>Enemigos</h3>
+            <div class="enemies" id="enemies"></div>
+          </div>
+
+          <div class="players">
+            <div class="pl pl1">
+              <span class="pl-tag">1P</span>
+              <span class="pl-lives"><img class="ico" data-sprite="p1" alt="" width="16" height="16"><b id="lives1">3</b></span>
+              <span class="pl-score" id="score1">0</span>
+            </div>
+            <div class="pl pl2" id="pl2" hidden>
+              <span class="pl-tag">2P</span>
+              <span class="pl-lives"><img class="ico" data-sprite="p2" alt="" width="16" height="16"><b id="lives2">3</b></span>
+              <span class="pl-score" id="score2">0</span>
+            </div>
+          </div>
+
+          <div class="meta">
+            <span>Nivel <b id="stageNum">1</b></span>
+            <span>Récord <b id="hiNum">0</b></span>
+          </div>
+
+          <p class="keys" id="keysHelp"></p>
+
+          <div class="actions">
+            <button class="btn" id="pauseBtn" type="button">Pausa</button>
+            <button class="btn" id="modeBtn" type="button">1 jugador</button>
+            <button class="btn" id="soundBtn" type="button" aria-pressed="false">Sonido: no</button>
+            <button class="btn" id="backBtn" type="button">Ver tarjeta</button>
+          </div>
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <p class="hint">Pulsa Jugar para darle la vuelta a la tarjeta y empezar la partida.</p>
+
+  <div class="touch" id="touch" aria-label="Controles táctiles">
+    <div class="dpad">
+      <button class="tbtn t-up" type="button" data-act="up" aria-label="Arriba"></button>
+      <button class="tbtn t-left" type="button" data-act="left" aria-label="Izquierda"></button>
+      <button class="tbtn t-right" type="button" data-act="right" aria-label="Derecha"></button>
+      <button class="tbtn t-down" type="button" data-act="down" aria-label="Abajo"></button>
+    </div>
+    <button class="tbtn t-fire" type="button" data-act="fire">Fuego</button>
+  </div>
+</main>
+
+<script src="script.js" defer></script>
